@@ -23,13 +23,8 @@ public class BinPack3pp {
 
     static List<Consumer> assignment =  new ArrayList<Consumer>();
 
-
     static List<Consumer> currentAssignment = assignment;
-
     private static KafkaConsumer<byte[], byte[]> metadataConsumer;
-
-
-
 
 
     public  void scaleAsPerBinPack() {
