@@ -62,7 +62,6 @@ public class BinPack3pp {
                 log.info("We have to downscale  group by {} {}", "testgroup1", replicasForscaled);
                 size = neededsized;
                 LastUpScaleDecision = Instant.now();
-
                 try (final KubernetesClient k8s = new KubernetesClientBuilder().build()) {
                     k8s.apps().deployments().inNamespace("default").withName("latency").scale(neededsized);
                     log.info("I have downscaled group {} you should have {}", "testgroup1", neededsized);
@@ -98,12 +97,12 @@ public class BinPack3pp {
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R
         //that should not happen in a well partionned topic
         for (Partition partition : parts) {
-            if (partition.getArrivalRate() >ArrivalRates.processingRate *fraction/*dynamicAverageMaxConsumptionRate*wsla*/) {
+            if (partition.getArrivalRate() >ArrivalRates.processingRate *fraction) {
                 log.info("Since partition {} has arrival rate {} higher than consumer service rate {}" +
                                 " we are truncating its arrival rate", partition.getId(),
                         String.format("%.2f", partition.getArrivalRate()),
-                        String.format("%.2f",ArrivalRates.processingRate *fraction /*dynamicAverageMaxConsumptionRate*wsla*/));
-                partition.setArrivalRate(ArrivalRates.processingRate*fraction /*dynamicAverageMaxConsumptionRate*wsla*/);
+                        String.format("%.2f",ArrivalRates.processingRate *fraction ));
+                partition.setArrivalRate(ArrivalRates.processingRate*fraction );
             }
         }
         //start the bin pack FFD with sort
@@ -114,7 +113,7 @@ public class BinPack3pp {
             consumers.clear();
             for (int t = 0; t < consumerCount; t++) {
                 consumers.add(new Consumer((String.valueOf(t)),  (long)(ArrivalRates.processingRate*wsla*fraction),
-                        ArrivalRates.processingRate*fraction/*dynamicAverageMaxConsumptionRate*wsla*/));
+                        ArrivalRates.processingRate*fraction));
             }
 
             for (j = 0; j < parts.size(); j++) {
