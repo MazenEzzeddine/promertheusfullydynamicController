@@ -30,23 +30,17 @@ public class BinPack3pp {
 
 
     public  void scaleAsPerBinPack() {
-        scaled = false;
         log.info("Currently we have this number of consumers group {} {}","testgroup1", size );
-
         log.info("We have this processing rate {}", ArrivalRates.processingRate);
         int neededsize = binPackAndScale();
         log.info("We currently need the following consumers for group1 (as per the bin pack) {}", neededsize);
         int replicasForscale = neededsize - size;
         if (replicasForscale > 0) {
-            scaled = true;
             //TODO IF and Else IF can be in the same logic
             log.info("We have to upscale  group1 by {}", replicasForscale);
-           // neededsize=5;
             size = neededsize;
             currentAssignment = assignment;
-            tempAssignment = assignment;
             LastUpScaleDecision= Instant.now();
-
             try (final KubernetesClient k8s = new KubernetesClientBuilder().build() ) {
                 k8s.apps().deployments().inNamespace("default").withName("latency").scale(neededsize);
                 log.info("I have Upscaled group {} you should have {}", "testgroup1", neededsize);
@@ -57,9 +51,7 @@ public class BinPack3pp {
             int neededsized = binPackAndScaled();
             int replicasForscaled = size - neededsized;
             if (replicasForscaled > 0) {
-               // scaled = true;
                 log.info("We have to downscale  group by {} {}", "testgroup1", replicasForscaled);
-               // neededsized=5;
                 size = neededsized;
                 LastUpScaleDecision = Instant.now();
 
@@ -75,6 +67,7 @@ public class BinPack3pp {
                     metadataConsumer = new KafkaConsumer<>(props);
                 }
                 metadataConsumer.enforceRebalance();
+                currentAssignment = tempAssignment;
             }
         }
         log.info("===================================");
@@ -136,6 +129,9 @@ public class BinPack3pp {
         }
         log.info(" The BP up scaler recommended for group {} {}", "testgroup1", consumers.size());
         assignment = consumers;
+
+        tempAssignment = assignment;
+
         return consumers.size();
     }
 
