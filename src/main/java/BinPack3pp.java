@@ -24,6 +24,8 @@ public class BinPack3pp {
     static List<Consumer> assignment =  new ArrayList<Consumer>();
 
     static List<Consumer> currentAssignment = assignment;
+    static List<Consumer> tempAssignment;
+
     private static KafkaConsumer<byte[], byte[]> metadataConsumer;
 
 
@@ -42,6 +44,7 @@ public class BinPack3pp {
            // neededsize=5;
             size = neededsize;
             currentAssignment = assignment;
+            tempAssignment = assignment;
             LastUpScaleDecision= Instant.now();
 
             try (final KubernetesClient k8s = new KubernetesClientBuilder().build() ) {
@@ -49,18 +52,7 @@ public class BinPack3pp {
                 log.info("I have Upscaled group {} you should have {}", "testgroup1", neededsize);
             }
 
-        } else if (replicasForscale == 0) {
-            if (metadataConsumer == null) {
-                KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
-                Properties props = KafkaConsumerConfig.createProperties(config);
-                metadataConsumer = new KafkaConsumer<>(props);
-            }
-            currentAssignment = assignment;
-            metadataConsumer.enforceRebalance();
         }
-
-
-
         else {
             int neededsized = binPackAndScaled();
             int replicasForscaled = size - neededsized;
@@ -76,6 +68,13 @@ public class BinPack3pp {
                     log.info("I have downscaled group {} you should have {}", "testgroup1", neededsized);
                 }
                 currentAssignment = assignment;
+            } else if (assignmentViolatesTheSLA()) {
+                if (metadataConsumer == null) {
+                    KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
+                    Properties props = KafkaConsumerConfig.createProperties(config);
+                    metadataConsumer = new KafkaConsumer<>(props);
+                }
+                metadataConsumer.enforceRebalance();
             }
         }
         log.info("===================================");
@@ -192,6 +191,18 @@ public class BinPack3pp {
         assignment = consumers;
         return consumers.size();
     }
+
+
+    private  boolean assignmentViolatesTheSLA() {
+        for (Consumer cons : currentAssignment) {
+            if (cons.getRemainingLagCapacity() <  (long) (wsla*ArrivalRates.processingRate*.9f)||
+                    cons.getRemainingArrivalCapacity() < ArrivalRates.processingRate*0.9f){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 }
