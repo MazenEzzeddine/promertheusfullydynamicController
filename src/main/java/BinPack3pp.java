@@ -18,8 +18,7 @@ public class BinPack3pp {
     private  int size =1;
     public   Instant LastUpScaleDecision = Instant.now();
 
-    private final double wsla = 1;
-   static boolean scaled;
+    private final static double wsla = 1;
 
     static List<Consumer> assignment =  new ArrayList<Consumer>();
 
@@ -27,6 +26,15 @@ public class BinPack3pp {
     static List<Consumer> tempAssignment;
 
     private static KafkaConsumer<byte[], byte[]> metadataConsumer;
+
+    static {
+        currentAssignment.add(new Consumer("0", (long) (200f * wsla * .9),
+                200f * .9));
+        for (Partition p : ArrivalRates.topicpartitions) {
+            currentAssignment.get(0).assignPartition(p);
+        }
+    }
+
 
 
     public  void scaleAsPerBinPack() {

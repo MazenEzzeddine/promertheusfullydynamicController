@@ -16,8 +16,7 @@ public class Constants {
             "query=sum(rate(kafka_topic_partition_current_offset%7Btopic=%22testtopic1%22,partition=%224%22,namespace=%22default%22%7D%5B20s%5D))";
 
 
-    //  "sum(kafka_consumergroup_lag%7Bconsumergroup=%22testgroup1%22,topic=%22testtopic1%22, namespace=%22kubernetes_namespace%7D)%20by%20(consumergroup,topic)"
-    //sum(kafka_consumergroup_lag{consumergroup=~"$consumergroup",topic=~"$topic", namespace=~"$kubernetes_namespace"}) by (consumergroup, topic)
+
 
     static String topic1lag = "http://prometheus-operated:9090/api/v1/query?query=" +
             "sum(kafka_consumergroup_lag%7Bconsumergroup=%22testgroup1%22,topic=%22testtopic1%22,namespace=%22default%22%7D)%20by%20(consumergroup,topic)";
@@ -54,6 +53,5 @@ public class Constants {
 
 }
 
-// avg(quantile_over_time(0.95, processingGauge[30s]))
-    ////////////////////////topic2
+
 
