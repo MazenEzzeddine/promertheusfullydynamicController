@@ -90,9 +90,7 @@ public class BinPack3pp {
         List<Consumer> consumers = new ArrayList<>();
         int consumerCount = 1;
         List<Partition> parts = new ArrayList<>(ArrivalRates.topicpartitions);
-
         float fraction = 0.9f;//1.0f;//1;//0.9f;//1.0f;//0.9f; //1f;
-
 
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R
         //that should not happen in a well partionned topic
@@ -136,9 +134,7 @@ public class BinPack3pp {
         }
         log.info(" The BP up scaler recommended for group {} {}", "testgroup1", consumers.size());
         assignment = consumers;
-
         tempAssignment = assignment;
-
         return consumers.size();
     }
 

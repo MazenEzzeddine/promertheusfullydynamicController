@@ -34,9 +34,11 @@ public class ArrivalRates {
 
     }
 
+    static  HttpClient client = HttpClient.newHttpClient();
+
 
     static void arrivalRateTopic1() throws ExecutionException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
+        //HttpClient client = HttpClient.newHttpClient();
         ////////////////////////////////////////////////////
         List<URI> partitions = new ArrayList<>();
         try {
@@ -128,13 +130,12 @@ public class ArrivalRates {
 
         log.info("******************");
 
-
     }
 
     private static void queryLatency()  {
 
 
-        HttpClient client = HttpClient.newHttpClient();
+     //   HttpClient client = HttpClient.newHttpClient();
 
 
         List<URI> latencies = new ArrayList<>();
