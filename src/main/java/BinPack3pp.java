@@ -1,6 +1,7 @@
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,14 +68,20 @@ public class BinPack3pp {
                     log.info("I have downscaled group {} you should have {}", "testgroup1", neededsized);
                 }
                 currentAssignment = assignment;
-            } else if (assignmentViolatesTheSLA()) {
-                if (metadataConsumer == null) {
-                    KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
-                    Properties props = KafkaConsumerConfig.createProperties(config);
-                    metadataConsumer = new KafkaConsumer<>(props);
-                }
+            } else if (assignmentViolatesTheSLA2()) {
+
+                ///
+                KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
+                Properties props = KafkaConsumerConfig.createProperties(config);
+                props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                        "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                        "org.apache.kafka.common.serialization.StringDeserializer");
+                metadataConsumer = new KafkaConsumer<>(props);
                 metadataConsumer.enforceRebalance();
                 currentAssignment = tempAssignment;
+                ///
+
             }
         }
         log.info("===================================");
@@ -192,15 +199,38 @@ public class BinPack3pp {
     }
 
 
-    private  boolean assignmentViolatesTheSLA() {
+//    private  boolean assignmentViolatesTheSLA() {
+//        for (Consumer cons : currentAssignment) {
+//            if (cons.getRemainingLagCapacity() <  (long) (wsla*ArrivalRates.processingRate*.9f)||
+//                    cons.getRemainingArrivalCapacity() < ArrivalRates.processingRate*0.9f){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+
+
+
+    private static boolean assignmentViolatesTheSLA2() {
+
+        List<Partition> partsReset = new ArrayList<>(ArrivalRates.topicpartitions);
         for (Consumer cons : currentAssignment) {
-            if (cons.getRemainingLagCapacity() <  (long) (wsla*ArrivalRates.processingRate*.9f)||
-                    cons.getRemainingArrivalCapacity() < ArrivalRates.processingRate*0.9f){
+            double sumPartitionsArrival = 0;
+            double sumPartitionsLag = 0;
+            for (Partition p : cons.getAssignedPartitions()) {
+                sumPartitionsArrival += partsReset.get(p.getId()).getArrivalRate();
+                sumPartitionsLag += partsReset.get(p.getId()).getLag();
+            }
+
+            if (sumPartitionsLag  > ( wsla * 200  * .9f)
+                    || sumPartitionsArrival > 200* 0.9f) {
                 return true;
             }
         }
         return false;
     }
+
 
 
 
