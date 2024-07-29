@@ -167,10 +167,10 @@ public class ArrivalRates {
                 if (index == 0) {
                     //log.info("processing latency is {}", lat);
                     //processingRate = 1000.0/lat;
-                    log.info("processing rate avg over time  percentile over 30s (mu) is {}", processingRate);
+                    log.info("processing rate avg over time  percentile over 10s (mu) is {}", processingRate);
                 } else {
                     processingRate = 1000.0/lat;
-                    log.info("processing rate 95 percentile over 30s (mu) is {}", processingRate);
+                    log.info("processing rate 95 percentile over 10s (mu) is {}", processingRate);
                 }
                 index++;
             } catch (Exception e) {

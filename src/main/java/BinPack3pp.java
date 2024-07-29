@@ -44,11 +44,12 @@ public class BinPack3pp {
         int neededsize = binPackAndScale();
         log.info("We currently need the following consumers for group1 (as per the bin pack) {}", neededsize);
         int replicasForscale = neededsize - size;
+        tempAssignment = List.copyOf(assignment);
         if (replicasForscale > 0) {
             //TODO IF and Else IF can be in the same logic
             log.info("We have to upscale  group1 by {}", replicasForscale);
             size = neededsize;
-            currentAssignment = assignment;
+            currentAssignment = List.copyOf(assignment);
             LastUpScaleDecision= Instant.now();
             try (final KubernetesClient k8s = new KubernetesClientBuilder().build() ) {
                 k8s.apps().deployments().inNamespace("default").withName("latency").scale(neededsize);
@@ -66,18 +67,21 @@ public class BinPack3pp {
                 try (final KubernetesClient k8s = new KubernetesClientBuilder().build()) {
                     k8s.apps().deployments().inNamespace("default").withName("latency").scale(neededsized);
                     log.info("I have downscaled group {} you should have {}", "testgroup1", neededsized);
+                    currentAssignment = List.copyOf(assignment);
+
                 }
-                currentAssignment = assignment;
             } else if (assignmentViolatesTheSLA2()) {
 
                 ///
-                KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
-                Properties props = KafkaConsumerConfig.createProperties(config);
-                props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                        "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                        "org.apache.kafka.common.serialization.StringDeserializer");
-                metadataConsumer = new KafkaConsumer<>(props);
+                if(metadataConsumer== null) {
+                    KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
+                    Properties props = KafkaConsumerConfig.createProperties(config);
+                    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                            "org.apache.kafka.common.serialization.StringDeserializer");
+                    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                            "org.apache.kafka.common.serialization.StringDeserializer");
+                    metadataConsumer = new KafkaConsumer<>(props);
+                }
                 metadataConsumer.enforceRebalance();
                 currentAssignment = tempAssignment;
                 ///
