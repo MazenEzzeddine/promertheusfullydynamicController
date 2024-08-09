@@ -19,7 +19,7 @@ public class BinPack3pp {
     private  int size =1;
     public   Instant LastUpScaleDecision = Instant.now();
 
-    private final static double wsla = 1;
+    private final static double wsla = 0.5;
 
     static List<Consumer> assignment =  new ArrayList<Consumer>();
 
@@ -114,6 +114,16 @@ public class BinPack3pp {
                 partition.setArrivalRate(ArrivalRates.processingRate*fraction );
             }
         }
+
+        for (Partition partition : parts) {
+            if (partition.getLag() > ArrivalRates.processingRate *fraction *wsla) {
+                log.info("Since partition {} has lag {} higher than consumer capacity times wsla {}" +
+                        " we are truncating its lag", partition.getId(), partition.getLag(), ArrivalRates.processingRate*wsla* fraction);
+                partition.setLag((long)(ArrivalRates.processingRate*wsla* fraction));
+            }
+        }
+
+
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
 
@@ -130,7 +140,8 @@ public class BinPack3pp {
                 Collections.sort(consumers, Collections.reverseOrder());
                 for (i = 0; i < consumerCount; i++) {
 
-                    if (consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate()) {
+                    if (consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate() &&
+                            consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag()) {
                         consumers.get(i).assignPartition(parts.get(j));
                         break;
                     }
@@ -168,6 +179,14 @@ public class BinPack3pp {
                 partition.setArrivalRate(fractiondynamicAverageMaxConsumptionRate);
             }
         }
+
+        for (Partition partition : parts) {
+            if (partition.getLag() > fractiondynamicAverageMaxConsumptionRate *wsla) {
+                log.info("Since partition {} has lag {} higher than consumer capacity times wsla {}" +
+                        " we are truncating its lag", partition.getId(), partition.getLag(), fractiondynamicAverageMaxConsumptionRate*wsla);
+                partition.setLag((long)(fractiondynamicAverageMaxConsumptionRate*wsla));
+            }
+        }
         //start the bin pack FFD with sort
         Collections.sort(parts, Collections.reverseOrder());
         while (true) {
@@ -184,7 +203,8 @@ public class BinPack3pp {
                 Collections.sort(consumers, Collections.reverseOrder());
                 for (i = 0; i < consumerCount; i++) {
 
-                    if (consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate()) {
+                    if (consumers.get(i).getRemainingArrivalCapacity() >= parts.get(j).getArrivalRate() &&
+                            consumers.get(i).getRemainingLagCapacity() >= parts.get(j).getLag()) {
                         consumers.get(i).assignPartition(parts.get(j));
                         break;
                     }
@@ -227,8 +247,8 @@ public class BinPack3pp {
                 sumPartitionsLag += partsReset.get(p.getId()).getLag();
             }
 
-            if (sumPartitionsLag  > ( wsla * 200  * .9f)
-                    || sumPartitionsArrival > 200* 0.9f) {
+            if (sumPartitionsLag  > ( wsla * ArrivalRates.processingRate  * .9f)
+                    || sumPartitionsArrival > ArrivalRates.processingRate* 0.9f) {
                 return true;
             }
         }

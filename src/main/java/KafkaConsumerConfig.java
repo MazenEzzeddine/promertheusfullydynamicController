@@ -21,7 +21,7 @@ public class KafkaConsumerConfig {
 
     }
     public static KafkaConsumerConfig fromEnv() {
-        String bootstrapServers = "my-cluster-kafka-bootsrap:9092"; //System.getenv("my-cluster-kafka-bootsrap:9092");
+        String bootstrapServers = "my-cluster-kafka-bootstrap:9092"; //System.getenv("my-cluster-kafka-bootsrap:9092");
         String topic = "testtopic1";//System.getenv("testtopic11");
         String groupId = "testgroup1";//System.getenv("testgroup1");
         return new KafkaConsumerConfig(bootstrapServers, topic, groupId);

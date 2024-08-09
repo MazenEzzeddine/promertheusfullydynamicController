@@ -42,6 +42,9 @@ public class Constants {
 
     static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg(avg_over_time(processingGauge%5B10s%5D))";
+
+ /*   static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
+            "avg(processingGauge)";*/
     static String processingLatencyPercentileAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg(quantile_over_time(0.95%2CprocessingGauge%5B10s%5D))";
 

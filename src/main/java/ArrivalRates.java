@@ -166,12 +166,12 @@ public class ArrivalRates {
                 if (lat == 0.0) return;
                 if (index == 0) {
                     //log.info("processing latency is {}", lat);
-                    //processingRate = 1000.0/lat;
+                    processingRate = 1000.0/lat;
                     log.info("processing rate avg over time  percentile over 10s (mu) is {}", processingRate);
-                } else {
+                }/* else {
                     processingRate = 1000.0/lat;
                     log.info("processing rate 95 percentile over 10s (mu) is {}", processingRate);
-                }
+                }*/
                 index++;
             } catch (Exception e) {
                // e.printStackTrace();

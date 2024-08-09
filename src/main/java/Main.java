@@ -41,7 +41,7 @@ public class Main {
 
 
     private static void scaleLogic() throws InterruptedException, ExecutionException {
-        if  (Duration.between(bp.LastUpScaleDecision, Instant.now()).getSeconds() >3){
+        if  (Duration.between(bp.LastUpScaleDecision, Instant.now()).getSeconds() >10){
             bp.scaleAsPerBinPack();
         } else {
             log.info("No scale group 1 cooldown");
