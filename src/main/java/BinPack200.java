@@ -12,10 +12,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-public class BinPack3pp {
+public class BinPack200 {
 
     //TODO give fup and fdown as paramters to the functions.
-    private static final Logger log = LogManager.getLogger(BinPack3pp.class);
+    private static final Logger log = LogManager.getLogger(BinPack200.class);
     private  int size =1;
     public   Instant LastUpScaleDecision = Instant.now();
 
@@ -40,7 +40,7 @@ public class BinPack3pp {
 
     public  void scaleAsPerBinPack() {
         log.info("Currently we have this number of consumers group {} {}","testgroup1", size );
-        log.info("We have this processing rate {}", ArrivalRates.processingRate);
+        log.info("We have this processing rate {}", 200f);
         int neededsize = binPackAndScale();
         log.info("We currently need the following consumers for group1 (as per the bin pack) {}", neededsize);
         int replicasForscale = neededsize - size;
@@ -106,20 +106,20 @@ public class BinPack3pp {
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R
         //that should not happen in a well partionned topic
         for (Partition partition : parts) {
-            if (partition.getArrivalRate() >ArrivalRates.processingRate *fraction) {
+            if (partition.getArrivalRate() >200f *fraction) {
                 log.info("Since partition {} has arrival rate {} higher than consumer service rate {}" +
                                 " we are truncating its arrival rate", partition.getId(),
                         String.format("%.2f", partition.getArrivalRate()),
-                        String.format("%.2f",ArrivalRates.processingRate *fraction ));
-                partition.setArrivalRate(ArrivalRates.processingRate*fraction );
+                        String.format("%.2f",200f *fraction ));
+                partition.setArrivalRate(200f*fraction );
             }
         }
 
         for (Partition partition : parts) {
-            if (partition.getLag() > ArrivalRates.processingRate *fraction *wsla) {
+            if (partition.getLag() > 200f *fraction *wsla) {
                 log.info("Since partition {} has lag {} higher than consumer capacity times wsla {}" +
-                        " we are truncating its lag", partition.getId(), partition.getLag(), ArrivalRates.processingRate*wsla* fraction);
-                partition.setLag((long)(ArrivalRates.processingRate*wsla* fraction));
+                        " we are truncating its lag", partition.getId(), partition.getLag(), 200f*wsla* fraction);
+                partition.setLag((long)(200f*wsla* fraction));
             }
         }
 
@@ -131,8 +131,8 @@ public class BinPack3pp {
             int j;
             consumers.clear();
             for (int t = 0; t < consumerCount; t++) {
-                consumers.add(new Consumer((String.valueOf(t)),  (long)(ArrivalRates.processingRate*wsla*fraction),
-                        ArrivalRates.processingRate*fraction));
+                consumers.add(new Consumer((String.valueOf(t)),  (long)(200f*wsla*fraction),
+                        200f*fraction));
             }
 
             for (j = 0; j < parts.size(); j++) {
@@ -165,7 +165,7 @@ public class BinPack3pp {
         List<Consumer> consumers = new ArrayList<>();
         int consumerCount = 1;
         List<Partition> parts = new ArrayList<>(ArrivalRates.topicpartitions);
-        double fractiondynamicAverageMaxConsumptionRate = ArrivalRates.processingRate*0.2;
+        double fractiondynamicAverageMaxConsumptionRate = 200f*0.2;
 
 
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R
@@ -247,8 +247,8 @@ public class BinPack3pp {
                 sumPartitionsLag += partsReset.get(p.getId()).getLag();
             }
 
-            if (sumPartitionsLag  > ( wsla * ArrivalRates.processingRate  * .9f)
-                    || sumPartitionsArrival > ArrivalRates.processingRate* 0.9f) {
+            if (sumPartitionsLag  > ( wsla * 200f  * .9f)
+                    || sumPartitionsArrival > 200f* 0.9f) {
                 return true;
             }
         }
