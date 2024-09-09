@@ -165,7 +165,7 @@ public class BinPack3pp {
         List<Consumer> consumers = new ArrayList<>();
         int consumerCount = 1;
         List<Partition> parts = new ArrayList<>(ArrivalRates.topicpartitions);
-        double fractiondynamicAverageMaxConsumptionRate = ArrivalRates.processingRate*0.2;
+        double fractiondynamicAverageMaxConsumptionRate = ArrivalRates.processingRate*0.4;
 
 
         //if a certain partition has an arrival rate  higher than R  set its arrival rate  to R

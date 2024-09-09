@@ -43,8 +43,17 @@ public class Constants {
 /*    static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg(avg_over_time(processingGauge%5B5s%5D))";*/
 
-  static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
+ /* static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg(processingGauge)";
+*/
+    static String processingLatencyAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
+            "avg(processingGauge)";
+
+    static String events_latency_sum = "http://prometheus-operated:9090/api/v1/query?query=" +
+            "avg(rate(events_latency_sum[2s]))";
+
+    static String events_latency_count = "http://prometheus-operated:9090/api/v1/query?query=" +
+            "avg(rate(events_latency_count[2s]))";
     static String processingLatencyPercentileAvg = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg(quantile_over_time(0.95%2CprocessingGauge%5B10s%5D))";
 
@@ -52,6 +61,13 @@ public class Constants {
 /*    static String totalLatency = "http://prometheus-operated:9090/api/v1/query?query=" +
             "avg_over_time(totallatencygauge%5B30s%5D)";*/
 
+
+  /*  1000/(avg(rate(events_latency_sum[2s])/rate(events_latency_count[2s])))*/
+
+
+
+    static String pr = "http://prometheus-operated:9090/api/v1/query?query=" +
+            "1000/(avg(rate(events_latency_sum[2s])/rate(events_latency_count[2s])))";
 
 
 }
