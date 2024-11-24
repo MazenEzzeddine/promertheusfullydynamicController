@@ -41,8 +41,8 @@ public class Controller implements  Runnable {
 
         //until prometheus discover  processing rates from consumer
         if (ArrivalRates.processingRate != 0) {
-            //scaleLogic();
-            bp.scaleAsPerBinPack();
+            scaleLogic();
+           // bp.scaleAsPerBinPack();
         }
         // scaleLogic();
     }

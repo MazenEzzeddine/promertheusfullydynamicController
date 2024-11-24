@@ -118,7 +118,8 @@ public class BinPack3pp {
         for (Partition partition : parts) {
             if (partition.getLag() > ArrivalRates.processingRate *fraction *wsla) {
                 log.info("Since partition {} has lag {} higher than consumer capacity times wsla {}" +
-                        " we are truncating its lag", partition.getId(), partition.getLag(), ArrivalRates.processingRate*wsla* fraction);
+                        " we are truncating its lag", partition.getId(), partition.getLag(),
+                        ArrivalRates.processingRate*wsla* fraction);
                 partition.setLag((long)(ArrivalRates.processingRate*wsla* fraction));
             }
         }
@@ -238,7 +239,28 @@ public class BinPack3pp {
 
     private static boolean assignmentViolatesTheSLA2() {
 
+
+
+
         List<Partition> partsReset = new ArrayList<>(ArrivalRates.topicpartitions);
+
+
+        float fraction = 0.9f;
+        for (Partition partition : partsReset) {
+            if (partition.getLag() > ArrivalRates.processingRate * wsla * fraction) {
+                partition.setLag((long) (ArrivalRates.processingRate * wsla * fraction));
+            }
+        }
+
+        for (Partition partition : partsReset) {
+            if (partition.getArrivalRate() > ArrivalRates.processingRate * fraction) {
+                partition.setArrivalRate(ArrivalRates.processingRate * fraction);
+            }
+        }
+
+
+
+
         for (Consumer cons : currentAssignment) {
             double sumPartitionsArrival = 0;
             double sumPartitionsLag = 0;
