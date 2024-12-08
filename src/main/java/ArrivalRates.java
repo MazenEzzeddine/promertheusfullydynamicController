@@ -104,7 +104,7 @@ public class ArrivalRates {
             partition++;
         }
         log.info("totalArrivalRate for  topic 1 {}", totalarrivalstopic1);
-        partition = 0;
+      /*  partition = 0;
         double totallag = 0.0;
         long partitionLag = 0L;
         for (CompletableFuture<String> cf : partitionslagfuture) {
@@ -128,117 +128,14 @@ public class ArrivalRates {
 
         queryLatency();
 
+        log.info("******************");*/
+
+        queryLatency();
         log.info("******************");
 
     }
 
-   /* private static void queryLatency()  {
 
-
-     //   HttpClient client = HttpClient.newHttpClient();
-
-
-        List<URI> latencies = new ArrayList<>();
-        try {
-            latencies = Arrays.asList(
-                   *//* new URI(Constants.processingLatencyAvg),
-                    new URI(Constants.processingLatencyPercentileAvg)*//*
-                    new URI(Constants.events_latency_sum),
-                    new URI(Constants.events_latency_count)
-            );
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-
-        List<CompletableFuture<String>> latenciesFuture = latencies.stream()
-                .map(target -> client
-                        .sendAsync(
-                                HttpRequest.newBuilder(target).GET().build(),
-                                HttpResponse.BodyHandlers.ofString())
-                        .thenApply(HttpResponse::body))
-                .collect(Collectors.toList());
-
-        int index = 0;
-        double lat;
-        for (CompletableFuture<String> cf : latenciesFuture) {
-            //log.info("cf.get() {}", cf.get());
-            try {
-                lat = Util.parseJsonLatency(cf.get());
-                if (lat == 0.0) return;
-                if (index == 0) {
-                    //log.info("processing latency is {}", lat);
-                    processingRate = 1000.0/lat;
-                    log.info("processing rate avg over time  percentile over 10s (mu) is {}", processingRate);
-                }*//* else {
-                    processingRate = 1000.0/lat;
-                    log.info("processing rate 95 percentile over 10s (mu) is {}", processingRate);
-                }*//*
-                index++;
-            } catch (Exception e) {
-               // e.printStackTrace();
-               // log.info("Exception occured")
-                return;
-            }
-        }*/
-
-
-   /* private static void queryLatency()  {
-
-
-        //   HttpClient client = HttpClient.newHttpClient();
-
-
-        List<URI> latencies = new ArrayList<>();
-        try {
-            latencies = Arrays.asList(
-                   *//* new URI(Constants.processingLatencyAvg),
-                    new URI(Constants.processingLatencyPercentileAvg)*//*
-                    new URI(Constants.events_latency_sum),
-                    new URI(Constants.events_latency_count)
-            );
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-
-        List<CompletableFuture<String>> latenciesFuture = latencies.stream()
-                .map(target -> client
-                        .sendAsync(
-                                HttpRequest.newBuilder(target).GET().build(),
-                                HttpResponse.BodyHandlers.ofString())
-                        .thenApply(HttpResponse::body))
-                .collect(Collectors.toList());
-
-        int index = 0;
-        double lat;
-        double sum = 1;
-        double count = 1;
-        for (CompletableFuture<String> cf : latenciesFuture) {
-            //log.info("cf.get() {}", cf.get());
-            try {
-                lat = Util.parseJsonLatency(cf.get());
-                if (lat == 0.0) return;
-                if (index == 0) {
-                    //log.info("processing latency is {}", lat);
-                     sum  = lat;
-                    //log.info("processing rate avg over time  percentile over 10s (mu) is {}", processingRate);
-                }else {
-                   count = lat;
-                    //log.info("processing rate 95 percentile over 10s (mu) is {}", processingRate);
-                }
-                index++;
-            } catch (Exception e) {
-                // e.printStackTrace();
-                // log.info("Exception occured")
-                return;
-            }
-        }
-
-         processingRate =  sum/count;
-        log.info("processing rate is {}",  processingRate);
-    }
-*/
 
 
 
@@ -295,8 +192,7 @@ public class ArrivalRates {
             }
         }
 
-        /*processingRate =  sum/count;
-        log.info("processing rate is {}",  processingRate);*/
+
     }
 
 

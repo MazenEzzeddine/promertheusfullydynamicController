@@ -16,7 +16,7 @@ public class BinPack3pp {
 
     //TODO give fup and fdown as paramters to the functions.
     private static final Logger log = LogManager.getLogger(BinPack3pp.class);
-    private  int size =1;
+    public static   int size =1;
     public   Instant LastUpScaleDecision = Instant.now();
 
     private final static double wsla = 0.5;
